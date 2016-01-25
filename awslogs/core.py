@@ -54,6 +54,7 @@ class AWSLogs(object):
         self.output_timestamp_enabled = kwargs.get('output_timestamp_enabled')
         self.output_ingestion_time_enabled = kwargs.get(
             'output_ingestion_time_enabled')
+        self.max_stream_length = kwargs.get('max_stream_length')
         self.start = self.parse_datetime(kwargs.get('start'))
         self.end = self.parse_datetime(kwargs.get('end'))
 
@@ -84,6 +85,8 @@ class AWSLogs(object):
                 )
 
         max_stream_length = max([len(s) for s in streams]) if streams else 10
+        if self.max_stream_length is not None:
+            max_stream_length = min(self.max_stream_length, max_stream_length)
         group_length = len(self.log_group_name)
 
         queue, exit = Queue(), Event()
@@ -107,11 +110,11 @@ class AWSLogs(object):
                             'green'
                         )
                     )
-                if self.output_stream_enabled:
+                if self.output_stream_enabled and max_stream_length:
                     output.append(
                         self.color(
-                            event['logStreamName'].ljust(max_stream_length,
-                                                         ' '),
+                            event['logStreamName'][:self.max_stream_length]
+                                .ljust(max_stream_length, ' '),
                             'cyan'
                         )
                     )
