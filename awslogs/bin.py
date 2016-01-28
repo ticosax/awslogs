@@ -103,6 +103,22 @@ def main(argv=None):
                             dest='output_stream_enabled',
                             help="Add stream to the output")
 
+    get_parser.add_argument("--timestamp",
+                            action='store_true',
+                            dest='output_timestamp_enabled',
+                            help=("Add creation timestamp to the output"))
+
+    get_parser.add_argument("--ingestion-time",
+                            action='store_true',
+                            dest='output_ingestion_time_enabled',
+                            help=("Add ingestion time to the output"))
+
+    get_parser.add_argument("--max-stream-length",
+                            type=int,
+                            dest='max_stream_length',
+                            default=None,
+                            help="Maximum stream length to display")
+
     add_date_range_arguments(get_parser)
 
     get_parser.add_argument("--no-color",
