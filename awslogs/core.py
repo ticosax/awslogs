@@ -211,12 +211,18 @@ class AWSLogs(object):
     def get_streams(self, log_group_name=None):
         """Returns available CloudWatch logs streams in ``log_group_name``."""
         kwargs = {'logGroupName': log_group_name or self.log_group_name}
+        filter_by_date = ((self.start or self.end) or not
+                          (self.log_stream_name or self.filter_pattern))
         window_start = self.start or 0
         window_end = self.end or sys.float_info.max
 
         paginator = self.client.get_paginator('describe_log_streams')
         for page in paginator.paginate(**kwargs):
             for stream in page.get('logStreams', []):
+                if not filter_by_date:
+                    # return all streams
+                    yield stream['logStreamName']
+                    continue
                 if 'firstEventTimestamp' not in stream:
                     # This is a specified log stream rather than
                     # a filter on the whole log group, so there's
