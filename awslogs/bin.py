@@ -16,7 +16,7 @@ __version__ = "0.4.0"
 
 
 def main(argv=None):
-    sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
+    sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout.detach())
 
     argv = (argv or sys.argv)[1:]
 
